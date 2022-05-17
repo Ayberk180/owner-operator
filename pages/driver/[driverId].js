@@ -1,7 +1,8 @@
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
-import { findDriver, getComments } from '../../services/driver'
+import { findDriver, getComments, uploadComment } from '../../services/driver'
 import formatRelative from 'date-fns/formatRelative'
+
 
 export default function DriverInfo(props) {
 
@@ -32,6 +33,7 @@ export default function DriverInfo(props) {
 
     try{
       const createComment = uploadComment(driverId, body)
+      window.location.reload()
     }catch(error) {
       console.error(`Failed to insert item: ${err}`)
     }
@@ -53,7 +55,7 @@ export default function DriverInfo(props) {
           return (
             <div key={comment._id}>
               <p>Body: {comment.body}</p>
-              <p>Date: {formatRelative(new Date(), new Date())}</p>
+              <p>Date: {formatRelative(comment.createdAt, new Date())}</p>
               <p>By: {comment.createdBy}</p>
             </div>
           )

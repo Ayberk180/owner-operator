@@ -53,7 +53,7 @@ export async function uploadComment(driverId, body) {
         "driverId": driverId,
         "body": body,
         "createdBy": realmApp.currentUser.id,
-        "createdAt": moment().format("YYYY-MM-DD")
+        "createdAt": new Date()
       };
   
       const uploadComment = await realmApp.currentUser.mongoClient('mongodb-atlas').db('Owner-Operator').collection('comments').insertOne(newItem)
