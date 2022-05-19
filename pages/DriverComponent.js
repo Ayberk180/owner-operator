@@ -11,14 +11,7 @@ export default function DriverComponent(props) {
                 <p className="font-normal text-gray-700 dark:text-gray-400">CDL Type: {props.driver.cdlClass}</p>
                 <p className="font-normal text-gray-700 dark:text-gray-400">CDL State: {props.driver.cdlState}</p>
             </div>
-            <div>
-                <p>Complaint:</p>
-            </div>
         </a>
-
-        {/* <div className='text-red-700'>
-            <p>{props.children[1].driver_name}</p>
-        </div> */}
     </div>
   )
 }

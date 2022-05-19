@@ -1,10 +1,9 @@
 import { realmApp } from "../config/realm"
 import * as Realm from "realm-web"
 
-
 //create user and logout
 export async function driverList() {
-    const logout = await app.currentUser.logOut()
+    const logout = await realmApp.currentUser.logOut()
     return drivers
 }
 
@@ -16,3 +15,14 @@ export async function userSignIn(email, password) {
     if (app.currentUser)
         router.push('/dashboard')
 }
+
+export async function userInfo() {
+    const userInfo = await realmApp.currentUser.profile
+    return userInfo
+}
+
+
+// Invite users by email
+// export async function sendInvite() {
+//     const transporter = nodemailer.createTransport({})
+// }
