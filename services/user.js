@@ -16,9 +16,15 @@ export async function userSignIn(email, password) {
         router.push('/dashboard')
 }
 
-export async function userInfo() {
+export async function userEmail() {
     const userInfo = await realmApp.currentUser.profile
     return userInfo
+}
+
+export async function getUserId() {
+    const userId = await realmApp.currentUser.id
+    console.log(userId)
+    return userId
 }
 
 

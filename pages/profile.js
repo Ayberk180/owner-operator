@@ -1,16 +1,24 @@
+import { formatRelative } from 'date-fns'
 import React, { useEffect, useState } from 'react'
-import { userInfo } from '../services/user'
+import { getMyComments } from '../services/driver'
+import { getUserId, userEmail } from '../services/user'
 
 function profile() {
 
   const [username, setUsername] = useState('')
+  const [userId, setUserId] = useState('')
+  const [myComments, setMyComments] = useState([])
 
 
   useEffect(async () => {
-    setUsername(await userInfo())
-  })
-  console.log(username)
+    setUsername(await userEmail())
+    setMyComments(await getMyComments(await getUserId()))
 
+    
+  }, [userId])
+
+  
+  console.log(myComments)
   const invite = async event => {
 
   }
@@ -34,9 +42,22 @@ function profile() {
               <input className="px-3 text-sm py-1 mt-2 outline-none  w-full resize-none border rounded-lg placeholder:text-sm" placeholder="New password" />
               <input className="px-3 text-sm py-1 mt-2 outline-none  w-full resize-none border rounded-lg placeholder:text-sm" placeholder="Repeat new password" />
               <div className="flex justify-center mt-2"> 
-                <button className="h-12 w-[150px] bg-blue-400 text-sm text-white rounded-lg transition-all cursor-pointer hover:bg-blue-600">Submit</button>
+                <button className="h-12 w-[150px] bg-blue-400 text-sm text-white rounded-lg transition-all cursor-pointer hover:bg-blue-600">Submit comment</button>
               </div>
             </form>
+            <p className='text-2xl mt-20'>My Comments</p>
+            {myComments &&  myComments.map((comment) => {
+              console.log(comment)
+              return (
+                <div key={comment._id} className='  flex flex-col items-center mt-12 text-2xl border-t-2 border-gray-200'>
+                  <p className='flex flex-row text-xl'>
+                    Comment about {comment.driverId} 
+                    <p className='pl-2 text-lg text-gray-400'> {formatRelative(comment.createdAt, new Date())}</p>
+                  </p>
+                  <p className='pl-10'>{comment.body}</p>
+                </div>
+              )
+            })}
           </div>
       </div>
     </div>

@@ -16,8 +16,12 @@ export default function addUser() {
     const handleSubmit = async e => {
         e.preventDefault()
         try{
-            await addDriver(driverName, driverDOB, cdlClass, cdlState)
-            router.push("/dashboard")
+            if (driverName.trim().length && driverDOB.trim().length && cdlClass.trim().length && cdlState.trim().length !== 0) {
+                await addDriver(driverName, driverDOB, cdlClass, cdlState)
+                router.push("/dashboard")
+            }else{
+                alert('Missing Inputs')
+            }
         }catch(error){
             console.log(error);
         }

@@ -63,8 +63,14 @@ export async function uploadComment(driverId, body) {
 
 // List Comments
 export async function getComments(driverId) {
-    const comments = await realmApp.currentUser.mongoClient('mongodb-atlas').db('Owner-Operator').collection('comments').find({ driverId: driverId})
-    return comments
+  const comments = await realmApp.currentUser.mongoClient('mongodb-atlas').db('Owner-Operator').collection('comments').find({ driverId: driverId})
+  return comments
+}
+
+export async function getMyComments(userId) {
+  const comments = await realmApp.currentUser.mongoClient('mongodb-atlas').db('Owner-Operator').collection('comments').find({ createdBy: userId})
+  console.log(userId)
+  return comments
 }
 
 // Find Driver
