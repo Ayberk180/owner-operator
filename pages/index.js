@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react'
 import * as Realm from "realm-web"
+import NonUserNavbar from '../components/nonUserNavbar';
 import { realmApp } from '../config/realm';
 
 
@@ -39,6 +40,7 @@ export default function mLogin() {
     }
   return (
       <div>
+          <NonUserNavbar/>
         <form className='flex flex-col p-5 align-items-center'onSubmit={onSubmit}>
             <label>Sign In</label>
             <input className='shadow appearance-none border rounded  py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline' placeholder='Email: ' value={email} onChange={event => setEmail(event.target.value)} />

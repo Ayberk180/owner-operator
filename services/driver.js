@@ -34,7 +34,7 @@ export function driverList() {
 }
 
 // Create Driver
-export async function addDriver(driverName, driverDOB, cdlClass, cdlState) {
+export async function createDriver(driverName, driverDOB, cdlClass, cdlState) {
     const newDriver = await realmApp.currentUser.mongoClient('mongodb-atlas').db('Owner-Operator').collection('drivers').insertOne(
         {
             "driverName" :  driverName,
@@ -49,11 +49,16 @@ export async function addDriver(driverName, driverDOB, cdlClass, cdlState) {
 
 // Comment on Driver
 export async function uploadComment(driverId, body) {
+
+    const driver = await findDriver(driverId)
     const newItem = {
         "driverId": driverId,
+        "driverName": driver.driverName,
         "body": body,
         "createdBy": realmApp.currentUser.id,
-        "createdAt": new Date()
+        "createdAt": new Date(),
+        "isDeleted": false,
+
       };
   
       const uploadComment = await realmApp.currentUser.mongoClient('mongodb-atlas').db('Owner-Operator').collection('comments').insertOne(newItem)
@@ -61,15 +66,24 @@ export async function uploadComment(driverId, body) {
         //.catch(err => console.error(`Failed to insert item: ${err}`))
 }
 
+export async function deleteComment(commentId){
+  const deleteComment = await realmApp.currentUser.mongoClient('mongodb-atlas').db('Owner-Operator').collection('comments').updateOne(
+    {_id:commentId},
+    {
+      $set: {isDeleted: true}
+    }
+  )
+}
+
 // List Comments
 export async function getComments(driverId) {
-  const comments = await realmApp.currentUser.mongoClient('mongodb-atlas').db('Owner-Operator').collection('comments').find({ driverId: driverId})
+  //isDeleted condition
+  const comments = await realmApp.currentUser.mongoClient('mongodb-atlas').db('Owner-Operator').collection('comments').find({ driverId: driverId, isDeleted: false})
   return comments
 }
 
 export async function getMyComments(userId) {
   const comments = await realmApp.currentUser.mongoClient('mongodb-atlas').db('Owner-Operator').collection('comments').find({ createdBy: userId})
-  console.log(userId)
   return comments
 }
 
@@ -78,3 +92,20 @@ export async function findDriver(driverId) {
     const driver = await realmApp.currentUser.mongoClient('mongodb-atlas').db('Owner-Operator').collection('drivers').findOne({ _id: new Realm.BSON.ObjectID(driverId) })
     return driver
 }
+
+export async function test(userId) {
+  const comments = await realmApp.currentUser.mongoClient('mongodb-atlas').db('Owner-Operator').collection('comments').aggregate([
+    {
+      $lookup:
+      {
+        from: "drivers",
+        localField: "driverId",
+        foreignField: "_id",
+        as: "driver"
+      }
+    }
+  ])
+  console.log(comments)
+  return comments
+}
+

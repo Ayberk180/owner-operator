@@ -6,14 +6,21 @@ import { useDebounce } from 'use-debounce'
 import {searchDriver, driverList} from '../services/driver'
 import DriverComponent from './DriverComponent'
 import { realmApp } from '../config/realm'
-import Navbar from '../navbar'
+import Navbar from '../components/navbar'
+import {AiOutlineClose, AiOutlineMenu} from 'react-icons/ai'
 
 export default function dashboard() {
   const [drivers, setDrivers] = useState()
   const [query, setQuery] = useState("")
+  const [visible, setVisible] = useState(9)
   const [debouncedQuery] = useDebounce(query, 500)
+  const [hamburger, setHamburger] = useState(true)
   const router = useRouter()
   
+  const showMoreItems = () => {
+    setVisible((prevValue) => prevValue + 3)
+  }
+
   useEffect(async () => {      
     if(!realmApp.currentUser){
       router.push('/')
@@ -26,10 +33,14 @@ export default function dashboard() {
       const allDrivers = await driverList()
       console.log('After calling drivers: ', allDrivers)
       setDrivers(allDrivers)
-    
+
+      //reset visible results on every search
+      setVisible(9)
+      
       if (debouncedQuery != ""){
         const searchResult = await searchDriver(debouncedQuery)
         setDrivers(searchResult)
+        
     }
     }catch(error){
       console.error(error);
@@ -46,6 +57,10 @@ export default function dashboard() {
     }  
   }
 
+  function hamburgerClick(){
+    setHamburger(!hamburger)
+    console.log(hamburger)
+  }
 
   if(!realmApp.currentUser){
     return null
@@ -53,55 +68,32 @@ export default function dashboard() {
   return (
     <div>
 {/* NavBar */}
-      <div className="relative flex flex-wrap items-center justify-between px-2 py-3 bg-emerald-600 mb-3 shadow-md">
-        <div className="px-4 w-full flex flex-wrap items-center">
-          <div className="w-full relative flex justify-between lg:w-auto  px-4 lg:static lg:block lg:justify-start">
-            <a className="text-sm font-bold leading-relaxed inline-block mr-4 py-2 whitespace-nowrap uppercase text-white" href="#pablo">
-              Owner-Operator
-            </a>
-          </div>
-          <div className="lg:flex flex-grow items-center" id="example-navbar-warning">
-            <ul className="flex flex-col lg:flex-row list-none ml-auto">
-                <li className="nav-item">
-                  <Link href="/addUser">
-                    <button className="bg-blue-500 hover:bg-blue-700 outline outline-1 text-white font-bold mt-3 y-2 px-4 rounded" >Add Driver</button>
-                  </Link>              
-                </li>
-                <li className="nav-item">
-                  <Link href="/profile">
-                    <button className=" text-white font-bold mt-3 y-2 px-4 rounded" >Profile</button>
-                  </Link>
-                </li>
-                <li className="nav-item">
-                    <button className="text-white font-bold mt-3 y-2 px-4 rounded" onClick={onSubmit}>Logout</button>
-                </li>
-            </ul>
-          </div>
-        </div>
-      </div>
+    <Navbar/>
 {/* NavBar */}
-      <div className='flex flex-col align-items-center p-5 '>
-        <input className='outline outline-gray-300 focus:outline-gray-600 w-2/5 h-10 pl-3 rounded-2xl outline-2 '  onChange={e => {setQuery(e.target.value)}} placeholder='Search'/>
-        <Link href="/addUser">
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-3 y-2 px-4 rounded" >Add Driver</button>
-        </Link>
+    
+      <div className='flex flex-col align-items-center lg:p-5 sm:p-2'>
+        <input className='outline-gray-300 focus:outline-gray-600 md:w-4/5 lg:w-3/5 w-11/12 outline h-10 pl-3 rounded-2xl outline-2 '  onChange={e => {setQuery(e.target.value)}} placeholder='Search'/>
         {console.log('component rendered')}      
         {console.log('Drivers:', drivers)} 
-        <div className='grid grid-cols-3'>     
-          {drivers && drivers.map((driver, index) => {
+        <div className='md:w-4/5 lg:w-3/5 w-11/12 mt-2 flex flex-col justify-items-center'>     
+          {drivers && drivers.slice(0,visible).map((driver, index) => {
             // console.log(driver)
             return (
-              
-                <Link key={index} href={`driver/${driver._id}`} passHref>
+              <div key={index} className=''>
+
+                <Link  href={`driver/${driver._id}`} passHref>
                   <div>
                     <DriverComponent key={driver._id} driver={driver} /> 
                   </div>
                 </Link>
+                
+              </div>
             )
-          })}
-        </div>
+          })}  
+          <button hidden={(drivers && visible > drivers.length)} className="bg-white text-emerald-600 font-bold mt-3 y-2 px-4 rounded " onClick={showMoreItems}>Load More</button>
+        </div>          
+        
         <form className='p-2' onSubmit={onSubmit}>
-          <button>logout</button>
         </form>
       </div>
     </div>
