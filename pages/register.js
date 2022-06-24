@@ -1,5 +1,5 @@
 import Router, {useRouter } from 'next/router'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { createUserData, deactivateToken, getTokens, registerUser } from '../services/user'
 import * as Realm from "realm-web"
 import { realmApp } from '../config/realm'
@@ -14,25 +14,25 @@ export default function register() {
     const [pass, setPass] = useState("")
     const [confPass, setConfPass] = useState("")
     const [refToken, setRefToken] = useState("")
-    const { query } = useRouter()
+    const router = useRouter()
     
+    useEffect(async () => {
+        if(router.isReady){
+            setRefToken(router.query.token)
+        }
+    },[router.isReady])
 
     async function register(){
         const tokenArray = await getTokens()
-        setRefToken(query.token)
         
         console.log(email)
         console.log(pass)
         console.log(refToken)
 
         for (let token of tokenArray){
-            console.log(refToken)
             if (refToken == token.tokenId){
-                console.log("start here?")
                 if (pass == confPass && token.active == false) {
-                    console.log("here?")
                     await registerUser(email, pass)
-                    console.log("and here?")
                     await deactivateToken(refToken)
                     const credentials = Realm.Credentials.emailPassword(email, pass)
                     
