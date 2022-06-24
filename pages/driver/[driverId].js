@@ -36,7 +36,7 @@ export default function DriverInfo(props) {
     event.preventDefault()
 
     try{
-      const createComment = uploadComment(driverId, body)
+      const createComment = await uploadComment(driverId, body)
       window.location.reload()
     }catch(error) {
       console.error(`Failed to insert item: ${err}`)

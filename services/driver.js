@@ -63,7 +63,7 @@ export async function uploadComment(driverId, body) {
   
       const uploadComment = await realmApp.currentUser.mongoClient('mongodb-atlas').db('Owner-Operator').collection('comments').insertOne(newItem)
         .then(result => console.log(`Successfully inserted item with _id: ${result.insertedId}`))
-        //.catch(err => console.error(`Failed to insert item: ${err}`))
+        .catch(err => console.error(`Failed to insert item: ${err}`))
 }
 
 export async function deleteComment(commentId){
